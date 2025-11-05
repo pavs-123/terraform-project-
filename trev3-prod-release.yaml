@@ -1,0 +1,75 @@
+name: Setting up PROD Env
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  GKE_CLUSTER: jkdhthornfj-prod
+  GKE_ZONE: asia-south1
+  DEPLOYMENT_NAME: tre-v3
+  CONTAINER_PORT: 8113
+  IMAGE_NAME: asia-south1-docker.pkg.dev/prod-env-440707/profintech-tre-v3-prod/profintech-tre-v3-prod:latest
+  NAMESPACE: profintech-tre-v3-prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Validate Environment Variables
+        run: |
+          if [ -z "${{ secrets.GCP_SA_KEY_PROD  }}" ]; then
+            echo "GCP_SA_KEY_PROD is not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.GCP_PROJECT_ID_PROD }}" ]; then
+            echo "GCP_PROJECT_ID_PROD is not set"
+            exit 1
+          fi
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY_PROD  }}
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID_PROD }}
+
+      - name: Configure Docker and GKE
+        run: |
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID_PROD }}
+          gcloud auth configure-docker asia-south1-docker.pkg.dev
+          gcloud components install gke-gcloud-auth-plugin
+          gcloud container clusters get-credentials ${{ env.GKE_CLUSTER }} --zone ${{ env.GKE_ZONE }}
+
+      - name: Build and Push Docker Image
+        working-directory: transaction_recommendation/v0.03/code
+        run: |
+            docker build -t ${{ env.IMAGE_NAME }} .
+            docker push ${{ env.IMAGE_NAME }}
+        
+
+      - name: Apply Kubernetes Configurations
+        working-directory: transaction_recommendation/v0.03/deployment
+        run: |
+          kubectl apply -f deployment_prod.yaml
+          kubectl apply -f service_prod.yaml
+
+      - name: Verify Deployment
+        run: |
+          echo "Checking deployment rollout..."
+          kubectl rollout restart deployment/${{ env.DEPLOYMENT_NAME }} -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/${{ env.DEPLOYMENT_NAME }} -n ${{ env.NAMESPACE }}
+          
+          echo "Verifying pods..."
+          kubectl get pods -l app=${{ env.DEPLOYMENT_NAME }} -n ${{ env.NAMESPACE }}
+
+          echo "Verifying service..."
+          kubectl get service profintech-tre-v3 -n ${{ env.NAMESPACE }}

@@ -1,0 +1,50 @@
+{
+    "offers_data": [
+      {
+        "Finance Partner": "FP 1",
+        "Offers": "Offer 1",
+        "Amount": 190000,
+        "Interest Rate": 25,
+        "Days": 30,
+        "FP Rating": 4.0,
+        "Early Repayment Charges (%)": 1.6232,
+        "Flexibility in Repayment (1-5)": 2,
+        "Past Relationship or History (1-5)": 1,
+        "History of Transactions (1-5)": 3
+      },
+      {
+        "Finance Partner": "FP 2",
+        "Offers": "Offer 1",
+        "Amount": 180000,
+        "Interest Rate": 20,
+        "Days": 60,
+        "FP Rating": 4.3,
+        "Early Repayment Charges (%)": 1.6232,
+        "Flexibility in Repayment (1-5)": 2,
+        "Past Relationship or History (1-5)": 1,
+        "History of Transactions (1-5)": 3
+      },{
+        "Finance Partner": "FP 3",
+        "Offers": "Offer 13",
+        "Amount": 170000,
+        "Interest Rate": 22,
+        "Days": 25,
+        "FP Rating": 3.0,
+        "Early Repayment Charges (%)": 1.6232,
+        "Flexibility in Repayment (1-5)": 2,
+        "Past Relationship or History (1-5)": 1,
+        "History of Transactions (1-5)": 3
+      }
+       
+    ],
+    "weights": {
+        "Loan Amount Priority": 0.5,
+        "Low-Interest Rate Priority": 0.2,
+        "Longer Tenure Priority": 0.1,
+        "Finance Partner Reputation": 0.1,
+        "Early Repayment Charges Priority": 0.0,
+        "Flexibility in Repayment Priority": 0.0,
+        "Past Relationship or History Priority": 0.05,
+        "History of Transactions Priority": 0.05
+    }
+  }

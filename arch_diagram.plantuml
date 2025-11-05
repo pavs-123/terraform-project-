@@ -1,0 +1,29 @@
+@startuml
+
+
+node "Credit Bazzzar Platform" {
+ 
+  [Offer Data]
+}
+
+cloud "EKG" {
+  [Finance Partner Data]
+  [Historical Data]
+}
+
+[Offer Data] --> [API Gateway]
+
+package "Recommendation Engine" {
+  [Score Calculator]
+  [Dynamic Reason Generator]
+}
+
+
+[API Gateway] <->  [Score Calculator]
+[API Gateway] <->  [Dynamic Reason Generator]
+
+ 
+[Score Calculator] <..> [Finance Partner Data]
+[Score Calculator] <..> [Historical Data]
+
+@enduml
